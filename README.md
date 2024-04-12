@@ -1,1 +1,1 @@
-# de-project
+# only for dbt module
