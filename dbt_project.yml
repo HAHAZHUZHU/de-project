@@ -38,3 +38,6 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   taxi_ride_ny:
     # Applies to all files under models/example/
+
+# vars:
+#   is_test_run: true
