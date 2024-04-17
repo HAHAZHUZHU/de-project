@@ -20,7 +20,7 @@ models:
       columns:
           - name: tripid
             description: Primary key for this table, generated with a concatenation of vendorid+pickup_datetime
-            tests:
+            data_tests:
                 - unique:
                     severity: warn
                 - not_null:
@@ -40,14 +40,14 @@ models:
             description: The elapsed trip distance in miles reported by the taximeter.
           - name: Pickup_locationid
             description: locationid where the meter was engaged.
-            tests:
+            data_tests:
               - relationships:
                   to: ref('taxi_zone_lookup')
                   field: locationid
                   severity: warn
           - name: dropoff_locationid 
             description: locationid where the meter was engaged.
-            tests:
+            data_tests:
               - relationships:
                   to: ref('taxi_zone_lookup')
                   field: locationid
@@ -74,7 +74,7 @@ models:
           - name: Payment_type 
             description: >
               A numeric code signifying how the passenger paid for the trip.
-            tests: 
+            data_tests: 
               - accepted_values:
                   values: "{{ var('payment_type_values') }}"
                   severity: warn
@@ -111,7 +111,7 @@ models:
       columns:
           - name: tripid
             description: Primary key for this table, generated with a concatenation of vendorid+pickup_datetime
-            tests:
+            data_tests:
                 - unique:
                     severity: warn
                 - not_null:
@@ -131,14 +131,14 @@ models:
             description: The elapsed trip distance in miles reported by the taximeter.
           - name: Pickup_locationid
             description: locationid where the meter was engaged.
-            tests:
+            data_tests:
               - relationships:
                   to: ref('taxi_zone_lookup')
                   field: locationid
                   severity: warn
           - name: dropoff_locationid 
             description: locationid where the meter was engaged.
-            tests:
+            data_tests:
               - relationships:
                   to: ref('taxi_zone_lookup')
                   field: locationid
@@ -166,7 +166,7 @@ models:
           - name: Payment_type 
             description: >
               A numeric code signifying how the passenger paid for the trip.
-            tests: 
+            data_tests: 
               - accepted_values:
                   values: "{{ var('payment_type_values') }}"
                   severity: warn
