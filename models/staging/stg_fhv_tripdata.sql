@@ -17,7 +17,7 @@ select
     {{ dbt.safe_cast("PUlocationID", api.Column.translate_type("integer")) }} as pickup_locationid,
     {{ dbt.safe_cast("DOlocationID", api.Column.translate_type("integer")) }} as dropoff_locationid,
 
-    SR_Flag,
+    SR_Flag as sr_flag,
     Affiliated_base_number as affiliated_base_number
 from tripdata
 
