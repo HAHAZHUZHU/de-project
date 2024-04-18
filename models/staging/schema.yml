@@ -8,6 +8,7 @@ sources:
     tables:
       - name: green_trips
       - name: yellow_trips
+      - name: fhv_2019_trips
 
 models:
     - name: stg_green_tripdata
@@ -192,3 +193,27 @@ models:
             description: Total amount of all tolls paid in trip.
           - name: Total_amount 
             description: The total amount charged to passengers. Does not include cash tips.
+
+
+    - name: stg_fhv_tripdata
+      description: > 
+        For-Hire Vehicle (“FHV”) trip records include fields capturing the dispatching base license 
+        number and the pick-up date, time, and taxi zone location ID (shape file below). These 
+        records are generated from the FHV Trip Record submissions made by bases. 
+        For-Hire Vehicles include Liveries, Black Cars and Luxury Limousines.
+        For-Hire Vehicles only provide prearranged service reserved through a base or smartphone app.
+      columns:
+          - name: dispatching_base_num
+            description: the dispatching base license number
+          - name: pickup_datetime
+            description: The date and time when the meter was engaged
+          - name: dropOff_datetime
+            description: The date and time when the meter was disengaged
+          - name: PUlocationID
+            description: locationid where the meter was engaged
+          - name: DOlocationID	
+            description: locationid where the meter was disengaged
+          - name: SR_Flag	
+            description: not know now
+          - name: Affiliated_base_number	
+            description: not know now
