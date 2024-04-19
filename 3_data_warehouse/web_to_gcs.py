@@ -1,69 +1,80 @@
-import io
-import os
-import requests
+from pathlib import Path
 import pandas as pd
-from google.cloud import storage
+from prefect import flow, task
+from prefect_gcp.cloud_storage import GcsBucket
+from prefect_gcp import GcpCredentials
+import os
 
-"""
-Pre-reqs: 
-1. `pip install pandas pyarrow google-cloud-storage`
-2. Set GOOGLE_APPLICATION_CREDENTIALS to your project/service-account key
-3. Set GCP_GCS_BUCKET as your bucket or change default value of BUCKET
-"""
+@task(retries=3)
+def fetch(dataset_url: str) -> pd.DataFrame:
+    """Read fhv data from web into pandas DataFrame"""
+    df = pd.read_csv(dataset_url, compression='gzip')
 
-# services = ['fhv','green','yellow']
-init_url = 'https://github.com/DataTalksClub/nyc-tlc-data/releases/download/'
-# switch out the bucketname
-BUCKET = os.environ.get("GCP_GCS_BUCKET", "mage-zoomcamp-api-to-gcs")
-
-
-def upload_to_gcs(bucket, object_name, local_file):
-    """
-    Ref: https://cloud.google.com/storage/docs/uploading-objects#storage-upload-object-python
-    """
-    # # WORKAROUND to prevent timeout for files > 6 MB on 800 kbps upload speed.
-    # # (Ref: https://github.com/googleapis/python-storage/issues/74)
-    # storage.blob._MAX_MULTIPART_SIZE = 5 * 1024 * 1024  # 5 MB
-    # storage.blob._DEFAULT_CHUNKSIZE = 5 * 1024 * 1024  # 5 MB
-
-    client = storage.Client()
-    bucket = client.bucket(bucket)
-    blob = bucket.blob(object_name)
-    blob.upload_from_filename(local_file)
-
-
-def web_to_gcs(year, service):
-    for i in range(12):
-        
-        # sets the month part of the file_name string
-        month = '0'+str(i+1)
-        month = month[-2:]
-
-        # csv file_name
-        file_name = f"{service}_tripdata_{year}-{month}.csv.gz"
-
-        # download it using requests via a pandas df
-        request_url = f"{init_url}{service}/{file_name}"
-        r = requests.get(request_url)
-        open(file_name, 'wb').write(r.content)
-        print(f"Local: {file_name}")
-
-        # read it back into a parquet file
-        df = pd.read_csv(file_name, compression='gzip')
-        file_name = file_name.replace('.csv.gz', '.parquet')
-        df.to_parquet(file_name, engine='pyarrow')
-        print(f"Parquet: {file_name}")
-
-        # upload it to gcs 
-        upload_to_gcs(BUCKET, f"{service}/{file_name}", file_name)
-        print(f"GCS: {service}/{file_name}")
+    if color == "fhv":
+        # df.rename({'dropoff_datetime':'dropOff_datetime'}, axis='columns', inplace=True)
+        # df.rename({'PULocationID':'PUlocationID'}, axis='columns', inplace=True)
+        # df.rename({'DOLocationID':'DOlocationID'}, axis='columns', inplace=True)
+        df["pickup_datetime"] = pd.to_datetime(df["pickup_datetime"])
+        df["dropOff_datetime"] = pd.to_datetime(df["dropOff_datetime"])
+        df["PUlocationID"] = df["PUlocationID"].astype('Int64')
+        df["DOlocationID"] = df["DOlocationID"].astype('Int64')
+        df["SR_Flag"] = df["SR_Flag"].astype('Int64')
+    else: 
+        df["VendorID"] = df["VendorID"].astype('Int64')
+        df["RatecodeID"] = df["RatecodeID"].astype('Int64')
+        df["PULocationID"] = df["PULocationID"].astype('Int64')
+        df["DOLocationID"] = df["DOLocationID"].astype('Int64')
+        df["passenger_count"] = df["passenger_count"].astype('Int64')
+        df["payment_type"] = df["payment_type"].astype('Int64')
+        if color == "yellow":
+            df["tpep_pickup_datetime"] = pd.to_datetime(df["tpep_pickup_datetime"])
+            df["tpep_dropoff_datetime"] = pd.to_datetime(df["tpep_dropoff_datetime"])
+        elif color == "green":
+            df["lpep_pickup_datetime"] = pd.to_datetime(df["lpep_pickup_datetime"])
+            df["lpep_dropoff_datetime"] = pd.to_datetime(df["lpep_dropoff_datetime"])
+            df["trip_type"] = df["trip_type"].astype('Int64')
 
 
-# web_to_gcs('2019', 'green')
-# web_to_gcs('2020', 'green')
+    return df
 
-# web_to_gcs('2019', 'yellow')
-# web_to_gcs('2020', 'yellow')
+@task()
+def write_local(color, df: pd.DataFrame, dataset_file: str) -> Path:
+    """Write DataFrame out locally as parquet file"""
+    
+    # create directory if not exist
+    dir = f"data/{color}"
+    if not os.path.isdir(dir):
+        os.makedirs(dir)
 
-web_to_gcs('2019', 'fhv')
+    path = Path(f"{dir}/{dataset_file}.parquet")
+    df.to_parquet(path, compression="gzip")
+    return path
 
+@task()
+def write_gcs(path: Path):
+    """Upload local parquet file to GCS"""
+    gcp_block = GcsBucket.load("prefect-de-zoomcamp-gcs")
+    gcp_block.upload_from_path(from_path=path, to_path=path, timeout=600)
+
+@flow(log_prints=True)
+def etl_web_to_gcs(color, year, month):
+    """download"""
+    dataset_file = f"{color}_tripdata_{year}-{month:02}"
+    dataset_url = f"https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{color}/{dataset_file}.csv.gz"
+
+    df = fetch(dataset_url)
+    path = write_local(color, df, dataset_file)
+    write_gcs(path)
+    return path
+
+@flow(log_prints=True)
+def etl_parent_flow(color, months, year):
+    for month in months:
+        etl_web_to_gcs(color, year, month)
+
+if __name__ == "__main__":
+    # 1,2,3,
+    months = [1,2,3,4,5,6,7,8,9,10,11,12]
+    year = 2019
+    color = 'fhv'
+    etl_parent_flow(color, months, year)
