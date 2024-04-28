@@ -16,6 +16,12 @@ https://github.com/boisalai/de-zoomcamp-2023/blob/main/week2.md
 
 ## 2_docker_sql
 
+### Installing Google Cloud SDK
+
+https://stackoverflow.com/questions/31037279/gcloud-command-not-found-while-installing-google-cloud-sdk
+
+
+
 ### 1. Introduction to Docker
 
 **一些需要注意的点：**
@@ -162,7 +168,9 @@ https://stackoverflow.com/questions/31037279/gcloud-command-not-found-while-inst
 
 
 
-### Workshop: Creating GCP Infrastructure with Terraform
+
+
+# Workshop: Creating GCP Infrastructure with Terraform
 
 Install Google Cloud: https://cloud.google.com/sdk/docs/install-sdk?hl=zh-cn. 
 
@@ -314,7 +322,9 @@ export GOOGLE_APPLICATION_CREDENTIALS="<path/to/your/service-account-authkeys>.j
 
 
 
-# Week_2_workflow_orchestration
+# Week_2_workflow_orchestration_2023
+
+
 
 ## 3. Introduction to Prefect concepts
 
@@ -589,6 +599,8 @@ prefect agent start -q 'default'
 
 
 
+# Module 2 Workflow Orchestration 2024
+
 
 
 ## 2.2. Configuring Mage
@@ -757,37 +769,843 @@ terraform apply
 
 
 
-## Workshop1
+# Workshop 1 (DLT)
 
-### 如何理解Python中的yield用法?
+## 如何理解Python中的yield用法?
 
 https://zhuanlan.zhihu.com/p/268605982
 
 
 
-### Hive分区表详细介绍
+## Hive分区表详细介绍
 
 https://juejin.cn/post/7040689938521653285
 
 
 
+## Introduction of DLT:
+
+dlt is a python library created for the purpose of assisting data engineers to build simpler, faster and more robust pipelines with minimal effort.
+
+You can think of dlt as a loading tool that implements the best practices of data pipelines enabling you to just “use” those best practices in your own pipelines, in a declarative way.
+
+This enables you to stop reinventing the flat tyre, and leverage dlt to build pipelines much faster than if you did everything from scratch.
+
+dlt automates much of the tedious work a data engineer would do, and does it in a way that is robust. dlt can handle things like:
+
+- Schema: Inferring and evolving schema, alerting changes, using schemas as data contracts.
+- Typing data, flattening structures, renaming columns to fit database standards. In our example we will pass the “data” you can see above and see it normalised.
+- Processing a stream of events/rows without filling memory. This includes extraction from generators.
+- Loading to a variety of dbs or file formats.
+
+https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/cohorts/2024/workshops/dlt_resources/data_ingestion_workshop.md
+
+
+
+## Load to bigquery
+
+官方教程：https://dlthub.com/docs/dlt-ecosystem/destinations/bigquery
+
+用教程里的方法一就行，把 secrets.toml 中的内容进行替换，替换成自己的 service account credential json 的内容
+
+跟着做就行，但是要提前在 Bigquery 上创建好一个空的 dataset
 
 
 
 
-## Module 3 Data Warehouse and BigQuery 
 
-### 1. Data Warehouse
+
+
+# Module 3 Data Warehouse and BigQuery 
+
+## 1. Data Warehouse
 
 `INFORMATION_SCHEMA.PARTITIONS` 是 BigQuery 自带的信息模式，用于查询表的分区信息。这个系统视图提供了有关表分区的元数据，包括分区 ID、分区键值、分区位置和分区中的行数等信息。通过查询 `INFORMATION_SCHEMA.PARTITIONS`，可以方便地了解表的分区情况，以及每个分区中的数据量等信息
 
 
 
-### 3. BigQuery Best Practices
+## 3. BigQuery Best Practices
 
 **Denormalizing data**: 这里所说的数据去规范化指的是将原本分散在多个表中的数据合并到一个表中，从而减少在查询时需要进行的 JOIN 操作的次数和复杂度。通常情况下，数据规范化是指将数据按照一定的规则和范式分解到多个表中，以便降低数据冗余和提高数据的一致性。而数据去规范化则是相反的过程，即将原本分散的数据重新合并到一个表中，以简化查询操作并提高查询性能。
 
 
+
+
+
+# Module 4 Analytics Engineering
+
+## Notes worth referring to
+
+https://github.com/ziritrion/dataeng-zoomcamp/blob/main/notes/4_analytics.md
+
+https://github.com/Balajirvp/DE-Zoomcamp/blob/main/Week%204/Data%20Engineering%20Zoomcamp%20Week%204.ipynb
+
+https://medium.com/@oktavianidewi/de-zoomcamp-2023-learning-week-4-analytics-engineering-with-dbt-53f781803d3e
+
+
+
+## The difference of fact table and dimension table
+
+事实表（Fact Table）和维度表（Dimension Table）是数据仓库中常见的两种表，它们之间有以下区别：
+
+1. **数据内容**：
+   - **事实表**包含了业务过程中的事实（例如销售数量、收入金额等）以及与这些事实相关的外键，用于描述业务过程中发生的事件或行为。
+   - **维度表**包含了与事实表中的事实相关的维度信息，如日期、地理位置、产品类型等，用于对事实进行描述和分析。
+2. **粒度**：
+   - **事实表**通常以较低的粒度存储数据，即每一行记录代表了一个具体的业务事实。
+   - **维度表**通常以较高的粒度存储数据，即每一行记录代表了一个维度的属性。
+3. **大小**：
+   - **事实表**通常比较大，因为它存储了大量的事实数据。
+   - **维度表**通常比较小，因为它存储了维度属性的描述信息，而维度属性通常是有限且不会频繁变化的。
+4. **用途**：
+   - **事实表**用于记录业务过程中发生的事实事件，并支持基于事实数据的分析和报告。
+   - **维度表**用于描述和分析事实数据的上下文信息，如时间、地点、产品等的属性。
+
+举例说明： 假设我们有一个零售业务的数据仓库，其中包含销售数据。以下是一个简化的示例：
+
+- **事实表**：销售事实表包含了每一笔销售交易的具体信息，如销售日期、销售金额、产品编号、客户编号等。每一行记录代表了一笔销售交易的具体信息。
+
+  | 销售日期   | 产品编号 | 客户编号 | 销售金额 |
+  | ---------- | -------- | -------- | -------- |
+  | 2022-01-01 | P001     | C001     | 100      |
+  | 2022-01-02 | P002     | C002     | 150      |
+  | 2022-01-03 | P001     | C003     | 200      |
+
+- **维度表**：产品维度表包含了每个产品的描述信息，如产品名称、产品类型等。每一行记录代表了一个产品的描述信息。
+
+  | 产品编号 | 产品名称 | 产品类型 |
+  | -------- | -------- | -------- |
+  | P001     | 产品A    | 类型1    |
+  | P002     | 产品B    | 类型2    |
+
+在这个示例中，销售事实表存储了销售交易的具体信息，而产品维度表存储了产品的描述信息，两者通过产品编号进行关联。
+
+
+
+## The difference of sources directory and seed directory
+
+1. **sources文件夹**：
+   - **作用**：用于定义和管理数据源（source）。
+   - **内容**：sources文件夹中包含了用于连接到外部数据源的配置文件，例如连接信息、认证信息等。
+   - **文件类型**：通常是YAML或JSON格式的配置文件，用于描述数据源的连接和相关设置。
+   - **使用场景**：适用于连接外部数据源，如数据库、API等，并将其定义为dbt项目的数据源，以便在模型中使用。
+2. **seed文件夹**：
+   - **作用**：用于提供种子数据（seed data），即项目初始化时使用的静态数据。
+   - **内容**：seed文件夹中包含了静态数据文件，通常是CSV或其他常见格式的数据文件，用于初始化数据模型。
+   - **文件类型**：通常是静态数据文件，以常见的数据格式存储，如CSV、JSON等。
+   - **使用场景**：适用于在项目初始化阶段加载静态数据，如参考数据、常量数据等，以便在模型中进行分析和处理。
+
+简而言之，sources文件夹用于管理数据源的连接配置，而seed文件夹用于提供静态数据以初始化项目。这两个文件夹在dbt项目中起着不同的作用，但都是在数据处理过程中常见的组成部分。
+
+
+
+## 4. Development of dbt models
+
+### The - vars argument must be a YAML dictionary, but was of type str
+
+Remember to add a space between the variable and the value. Otherwise, it won't be interpreted as a dictionary.
+
+It should be:
+
+```
+dbt run --vars 'is_test_run: false'
+```
+
+
+
+```
+SELECT
+    locationid,
+    borough,
+    zone,
+    replace(service_zone, 'Boro', 'Green') as service_zone
+FROM {{ ref('taxi_zone_lookup) }}
+```
+
+
+
+### Explain ref()
+
+The `ref()` function references underlying tables and views in the Data Warehouse. When compiled, it will automatically build the dependencies and resolve the correct schema fo us. So, if BigQuery contains a schema/dataset called `dbt_dev` inside the `my_project` database which we're using for development and it contains a table called `stg_green_tripdata`, then the following code...
+
+```
+WITH green_data AS (
+    SELECT *,
+        'Green' AS service_type
+    FROM {{ ref('stg_green_tripdata') }}
+),
+```
+
+...will compile to this:
+
+```
+WITH green_data AS (
+    SELECT *,
+        'Green' AS service_type
+    FROM "my_project"."dbt_dev"."stg_green_tripdata"
+),
+```
+
+- The `ref()` function translates our references table into the full reference, using the `database.schema.table` structure.
+- If we were to run this code in our production environment, dbt would automatically resolve the reference to make ir point to our production schema.
+
+
+
+## 5. Testing and documenting dbt models
+
+
+
+
+
+## 6. Deploying a dbt project
+
+### The problems I have met during this phase:
+
+#### 1. Model configurations for a directory of models are not nested under the project name
+
+To apply configurations to models within your project, you need to **nest configurations under the project name**, and then use the directory path to apply fine-grained configurations.
+
+For example, consider a project, called `taxi_ride_ny` with the following structure:
+
+```markdown
+.
+├── dbt_project.yml
+└── models
+    ├── staging
+    │   ├── schema.yml
+    │   ├── stg_green_tripdata.sql
+    │   └── stg_yellow_tripdata.sql
+    ├── core
+    │   ├── schema.yml
+    │   ├── dim_zones.sql
+    │   └── fact_trips.sql
+    .........
+
+```
+
+The following configuration is valid:
+
+```yaml
+name: 'taxi_ride_ny'
+models:
+  taxi_ride_ny: # Name of this dbt project
+    staging:
+      materialized: view # Applies to all files under models/staging
+    core:
+      materialized: table # Applies to all files under models/core
+
+vars:
+  payment_type_values: [1,2,3,4,5,6]
+
+seeds:
+  taxi_ride_ny: # Name of this dbt project
+    taxi_zone_lookup:
+      +column_types:
+        locationid: numeric
+```
+
+The most common mistake people make is to omit the package name, like so:
+
+```yaml
+name: 'taxi_ride_ny'
+
+seeds:
+  # Missing the name of this dbt project
+    taxi_zone_lookup:
+      +column_types:
+        locationid: numeric
+```
+
+
+
+Commonly used DBT command:
+
+`dbt run`
+
+`dbt run --select my_model.sql`: will only run the model itself
+
+`dbt build`: To build all models and seeds
+
+`dbt seed`: Dbt seeds are meant to be used with CSV files that contain data that will not be changed often. In our example, we copy the content of [taxi_zone_lookup.csv](https://github.com/DataTalksClub/nyc-tlc-data/releases/tag/misc) and paste it in a file in the seeds directory. Then, we run `dbt seed` on the command line to create this table in our database.
+
+`dbt deps`: when we need to use packages, we must first run this command to install all dependencies
+
+`dbt test`: run all tests through the command
+
+
+
+
+
+## 7. Locker studio
+
+维度：横轴
+
+指标：纵轴
+
+
+
+## Homework 4 question 4:
+
+```sql
+with fhv as (
+    select service_type, count(*) total_count
+    from {{ ref('fact_fhv_trips') }}
+    where extract(month from pickup_datetime) = 7
+    group by service_type
+),
+green_yellow as (
+    select service_type, count(*) total_count
+    from {{ ref('fact_trips') }}
+    where extract(month from pickup_datetime) = 7
+    group by service_type
+)
+
+select * from fhv
+union all
+select * from green_yellow
+```
+
+
+
+
+
+# Module 5 Batch Processing
+
+
+
+## Notes worth referring to
+
+https://github.com/ziritrion/dataeng-zoomcamp/blob/main/notes/5_batch_processing.md
+
+https://github.com/boisalai/de-zoomcamp-2023/blob/main/week5.md
+
+
+
+## 1. Setup
+
+### macOS + Anaconda
+
+#### 1. Installing Java
+
+Ensure Brew and Java installed in your system:
+
+```zsh
+xcode-select --install
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+brew install java
+```
+
+
+
+Add the following environment variables to your `.bash_profile` or `.zshrc`:
+
+```
+export JAVA_HOME=/opt/homebrew/opt/openjdk
+export PATH="$JAVA_HOME/bin/:$PATH"
+
+echo 'export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"' >> ~/.zshrc
+```
+
+
+
+Make sure Java was installed to `/opt/homebrew/opt/openjdk`: Open Finder > Press Cmd+Shift+G > paste "/opt/homebrew/opt/openjdk". If you can't find it, then change the path location to appropriate path on your machine. You can also run `brew info java` to check where java was installed on your machine.
+
+
+
+#### 2. Anaconda-based spark set up
+
+if you are having anaconda setup, you can skip the spark installation and instead Pyspark package to run the spark. With Anaconda and Mac we can spark set by first installing pyspark and then for environment variable set up findspark
+
+```zsh
+pip3 install pyspark
+pip3 install findspark
+```
+
+
+
+Ensure that open JDK is already set up. This allows us to not have to install Spark separately and manually set up the environment.
+
+Also with this we may have to use Jupyter Lab (instead of Jupyter Notebook) to open a Jupyter notebook for running the programs. 
+
+Once the Spark is set up start the conda environment and open Jupyter Lab. Run the program below in notebook to check everything is running fine.
+
+```python
+import pyspark
+from pyspark.sql import SparkSession
+
+!spark-shell --version
+
+# Create SparkSession
+spark = SparkSession.builder.master("local[1]") \
+                    .appName('test-spark') \
+                    .getOrCreate()
+
+print(f'The PySpark {spark.version} version is running...')
+```
+
+
+
+### Some important concept
+
+Spark is used for transforming data in a Data Lake.
+
+There are tools such as Hive, Presto or Athena (a AWS managed Presto) that allow you to express jobs as SQL queries. However, there are times where you need to apply more complex manipulation which are very difficult or even impossible to express with SQL (such as ML models); in those instances, Spark is the tool to use.
+
+
+
+### 开启 JupyterLab 代码自动提示功能
+
+```
+pip install jupyterlab-lsp
+pip install 'python-lsp-server[all]'
+```
+
+进入 JupyterLab, 点击设置–高级设置–Code Completion–勾选 Continuous hinting
+
+
+
+## 3. Spark SQL and DataFrames
+
+### 3.1  First Look at Spark/PySpark
+
+在读取 .csv.gz 文件的前 1001 行，并且将这 1001 行输出到一个新的 csv 文件中：
+
+```zsh
+zcat < fhvhv_tripdata_2021-01.csv.gz | head -n 1001  > head.csv
+```
+
+这部分命令使用 `zcat` 命令来解压缩名为 `fhvhv_tripdata_2021-01.csv.gz` 的文件
+
+
+
+### 3.2 Spark DataFrames
+
+Unlike CSV files, parquet files contain the schema of the dataset, so there is no need to specify a schema like we previously did when reading the CSV file. You can check the schema like this:
+
+```python
+df.printSchema()
+```
+
+One of the reasons why parquet files are smaller than CSV files is because they store the data according to the datatypes, so integer values will take less space than long or string values.
+
+
+
+#### Action vs Transformations
+
+Some Spark methods are "lazy", meaning that they are not executed right away. You can test this with the last instructions we run in the previous section: after running them, the Spark UI will not show any new jobs. However, running `df.show()` right after will execute right away and display the contents of the dataframe; the Spark UI will also show a new job.
+
+These lazy commands are called ***transformations*** and the eager commands are called ***actions***. Computations only happen when actions are triggered.
+
+**Transformations -- lazy (not executed immediately)**
+
+- select colums
+- filter
+- joins
+- group by
+- .......
+
+**Actions -- eager (executed immediately)**
+
+- show
+- take
+- head
+- write
+- ......
+
+
+
+#### Functions and User Defined Functions (UDFs)
+
+Besides the SQL and Pandas-like commands we've seen so far, Spark provides additional built-in functions that allow for more complex data manipulation. By convention, these functions are imported as follows:
+
+```
+from pyspark.sql import functions as F
+```
+
+
+
+Here's an example of built-in function usage:
+
+```
+df \
+    .withColumn('pickup_date', F.to_date(df.pickup_datetime)) \
+    .withColumn('dropoff_date', F.to_date(df.dropoff_datetime)) \
+    .select('pickup_date', 'dropoff_date', 'PULocationID', 'DOLocationID') \
+    .show()
+```
+
+- `withColumn()`is a **transformation** that adds a new column to the dataframe.
+  - ***IMPORTANT***: adding a new column with the same name as a previously existing column will overwrite the existing column!
+
+- `select()` is another transformation that selects the stated columns.
+- `F.to_date()` is a built-in Spark function that converts a timestamp to date format (year, month and day only, no hour and minute).
+
+A list of built-in functions is available [in the official Spark documentation page](https://spark.apache.org/docs/latest/api/sql/index.html).
+
+
+
+Besides these built-in functions, Spark allows us to create ***User Defined Functions*** (UDFs) with custom behavior for those instances where creating SQL queries for that behaviour becomes difficult both to manage and test.
+
+UDFs are regular functions which are then passed as parameters to a special builder
+
+
+
+### Spark SQL
+
+`F.lit()` adds a *literal* or constant to a dataframe. We use it here to fill the `service_type` column with a constant value, which is its corresponging taxi type.
+
+
+
+Note that the SQL query is wrapped with 3 double quotes (`"`).
+
+
+
+
+
+## 4. Spark Internals
+
+### 4.1. Anatomy of a Spark Cluster
+
+
+
+### 4.2 GROUP BY in Spark
+
+The second stage **shuffles** the data: Spark will put all records with the **same keys** (in this case, the GROUP BY keys which are hour and zone) in the **same partition**. The algorithm to do this is called external merge sort. Once the shuffling has finished, we can once again apply the GROUP BY to these new partitions and **reduce** the records to the **final output**.
+
+- Note that the shuffled partitions may contain more than one key, but all records belonging to a key should end up in the same partition.
+
+
+
+### 4.3 Joins in Spark
+
+
+
+
+
+## 5. Resilient Distributed Datasets
+
+#### mapPartitions() 和 map() 的区别
+
+`map()` 和 `mapPartitions()` 都是Spark中用于RDD转换的函数，它们之间的主要区别在于处理数据的粒度和效率。
+
+1. **map()：**
+   - `map()` 函数对RDD中的每个元素都应用一个函数，返回一个新的RDD，该RDD包含应用函数后的结果。
+   - `map()` 函数是一种逐元素转换操作，适用于需要对每个元素进行单独操作的场景。
+   - 由于 `map()` 对每个元素都进行一次函数调用，因此在处理大规模数据时，可能会产生大量的函数调用开销，导致性能下降。
+2. **mapPartitions()：**
+   - `mapPartitions()` 函数是对RDD中的每个分区应用一个函数，返回一个新的RDD，该RDD包含应用函数后的结果。
+   - `mapPartitions()` 函数是一种批量转换操作，适用于需要对每个分区进行操作的场景，因此可以减少函数调用的开销。
+   - 在处理大规模数据时，`mapPartitions()` 通常比 `map()` 更高效，因为它将函数应用于每个分区而不是每个元素，减少了函数调用的次数。
+
+
+
+## 6. Running Spark in the Cloud
+
+### 6.1 Connecting to Google Cloud Storage
+
+
+
+### 6.2. Creating a Local Spark Cluster
+
+We will now see how to crate a Spark cluster in [Standalone Mode](https://spark.apache.org/docs/latest/spark-standalone.html) so that the cluster can remain running even after we stop running our notebooks.
+
+Simply go to your Spark install directory from a terminal and run the following command:
+
+`sbin` 文件夹的位置：`/opt/homebrew/Cellar/apache-spark/3.5.1/libexec`
+
+```shell
+./sbin/start-master.sh
+```
+
+
+
+You should now be able to open the main Spark dashboard by browsing to `localhost:8080` (remember to forward the port if you're running it on a virtual machine). At the very top of the dashboard the URL for the dashboard should appear; copy it and use it in your session code like so:
+
+```shell
+spark = SparkSession.builder \
+    .master("spark://<URL>:7077") \
+    .appName('test') \
+    .getOrCreate()
+```
+
+
+
+You may note that in the Spark dashboard there aren't any *workers* listed. The actual Spark jobs are run from within ***workers*** (or *slaves* in older Spark versions), which we need to create and set up.
+
+Similarly to how we created the Spark master, we can run a worker from the command line by running the following command from the Spark install directory:
+
+```shell
+./sbin/start-worker.sh <master-spark-URL>
+```
+
+
+
+最后运行的时候需要执行的命令：
+
+```shell
+spark-submit \
+    --master="spark://<URL>" \
+    my_script.py \
+        --input_green='data/pq/green/2020/*/' \
+        --input_yellow='data/pq/yellow/2020/*/' \
+        --output='data/report-2020'
+```
+
+
+
+
+
+### 6.3. Setting up a Dataproc Cluster
+
+在 Terminal 中运行 gcloud 相关命令来创建集群：
+
+```shell
+gcloud dataproc clusters create de-zoomcamp-cluster \
+    --region=us-central1 \
+    --subnet=default \
+    --master-machine-type=n2-standard-4 \
+    --num-workers=0 \
+    --project=dtc-de-419107 \
+    --optional-components=JUPYTER,DOCKER \
+    --service-account=mage-zoomcamp@dtc-de-419107.iam.gserviceaccount.com
+```
+
+**为什么要在 terminal 中创建？**因为，当我们在 GCP WEB UI 中创建集群时，不可以手动选择要使用的 service account, 这时候，dataproc 服务就会使用默认的 compute engine service account 来执行。但是，创建集群会失败，因为这个默认的 service account 没有足够的权限（storage 相关权限）
+
+
+
+#### Submit a job from UI
+
+Just need to follow the referred instruction.
+
+We have to upload `06_spark_sql.py` file to the bucket. Make sure you don’t specify the spark master in the code. The code to get a spark session should look like this.
+
+```shell
+gsutil cp 06_spark_sql.py gs://dtc_data_lake_de-zoomcamp-nytaxi-spark/code/06_spark_sql.py 
+```
+
+
+
+
+
+#### Submit a job with gloud CLI
+
+Before, submit this command, we must add the role **Dataproc Administrator** to the permission **dtc-dez-user** created in the previous weeks.
+
+```shell
+gcloud dataproc jobs submit pyspark \
+    --cluster=de-zoomcamp-cluster \
+    --region=us-central1 \
+    gs://dtc_data_lake_de-zoomcamp-nytaxi-spark/code/06_spark_sql.py \
+    -- \
+        --input_green='gs://dtc_data_lake_de-zoomcamp-nytaxi-spark/pq/green/2020/*/' \
+        --input_yellow='gs://dtc_data_lake_de-zoomcamp-nytaxi-spark/pq/yellow/2020/*/' \
+        --output='gs://dtc_data_lake_de-zoomcamp-nytaxi-spark/report-2020'
+```
+
+
+
+
+
+### 6.4. Connecting Spark to Big Query
+
+https://cloud.google.com/dataproc/docs/tutorials/bigquery-connector-spark-example?hl=zh-cn#pyspark
+
+First, we need to upload `06_spark_sql_bigquery.py` to GCP Bucket
+
+```shell
+gsutil cp 06_spark_sql_bigquery.py gs://dtc_data_lake_de-zoomcamp-nytaxi-spark/code/06_spark_sql_bigquery.py 
+```
+
+Then, we just need to execute the following gcloud command to submit spark job and directly write the output to Bigquery
+
+```shell
+gcloud dataproc jobs submit pyspark \
+    --cluster=de-zoomcamp-cluster \
+    --region=us-central1 \
+    --jars=gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar \
+    gs://dtc_data_lake_de-zoomcamp-nytaxi-spark/code/06_spark_sql_bigquery.py \
+    -- \
+        --input_green='gs://dtc_data_lake_de-zoomcamp-nytaxi-spark/pq/green/2020/*/' \
+        --input_yellow='gs://dtc_data_lake_de-zoomcamp-nytaxi-spark/pq/yellow/2020/*/' \
+        --output=trips_data_all.reports-2020
+```
+
+Go to **BigQuery**, we should see the report `reports-2020` created under `trips_data_all`.
+
+
+
+
+
+## workshop 2
+
+### Install PostgreSQL
+
+`brew install postgresql`
+
+To start postgresql@14 now and restart at login:
+
+ `brew services start postgresql@14`
+
+
+
+**Advantages of using RisingWave:**
+
+1. instead of doing 1 million joins, we just do one join for the new record and then incrementally add this to the pre-saved results
+
+
+
+### Homework solution:
+
+#### Q1:
+
+Create a materialized view to compute the average, min and max trip time **between each taxi zone**.
+
+Note that we consider the do not consider `a->b` and `b->a` as the same trip pair. So as an example, you would consider the following trip pairs as different pairs:
+
+```plaintext
+Yorkville East -> Steinway
+Steinway -> Yorkville East
+```
+
+From this MV, find the pair of taxi zones with the highest average trip time. You may need to use the [dynamic filter pattern](https://docs.risingwave.com/docs/current/sql-pattern-dynamic-filters/) for this.
+
+Options:
+
+1. **Yorkville East, Steinway**
+2. Murray Hill, Midwood
+3. East Flatbush/Farragut, East Harlem North
+4. Midtown Center, University Heights/Morris Heights
+
+p.s. The trip time between taxi zones does not take symmetricity into account, i.e. `A -> B` and `B -> A` are considered different trips. This applies to subsequent questions as well.
+
+```sql
+CREATE MATERIALIZED VIEW min_max_avg_trip_time_data AS
+    with tmp as (
+        SELECT
+            t1.zone pickup_zone,
+            t2.zone dropoff_zone,
+            trip_data.tpep_dropoff_datetime - trip_data.tpep_pickup_datetime trip_time
+        from
+            trip_data
+        join taxi_zone t1 on trip_data.pulocationid = t1.location_id
+        join taxi_zone t2 on trip_data.dolocationid = t2.location_id
+    )
+    select
+        pickup_zone,
+        dropoff_zone,
+        avg(trip_time) avg_trip_time,
+        max(trip_time) max_trip_time,
+        min(trip_time) min_trip_time
+    from
+        tmp
+    group by
+        pickup_zone, dropoff_zone;
+
+
+with highest_avg_trip_time as (
+    select
+        avg_trip_time
+    from
+        min_max_avg_trip_time_data
+    order by
+        avg_trip_time desc
+    limit 1
+)
+select
+    pickup_zone,
+    dropoff_zone,
+    avg_trip_time
+from
+    min_max_avg_trip_time_data
+WHERE
+    avg_trip_time = (select avg_trip_time from highest_avg_trip_time);
+```
+
+
+
+#### Q2:
+
+Recreate the MV(s) in question 1, to also find the **number of trips** for the pair of taxi zones with the highest average trip time.
+
+Options:
+
+1. 5
+2. 3
+3. 10
+4. **1**
+
+```sql
+with highest_avg_trip_time as (
+    select
+        avg_trip_time
+    from
+        min_max_avg_trip_time_data
+    order by
+        avg_trip_time desc
+    limit 1
+)
+select
+    count(*) number_of_trips
+from
+    min_max_avg_trip_time_data
+where
+    avg_trip_time = (select avg_trip_time from highest_avg_trip_time);
+```
+
+
+
+#### Q3:
+
+From the latest pickup time to 17 hours before, what are the top 3 busiest zones in terms of number of pickups? For example if the latest pickup time is 2020-01-01 17:00:00, then the query should return the top 3 busiest zones from 2020-01-01 00:00:00 to 2020-01-01 17:00:00.
+
+HINT: You can use [dynamic filter pattern](https://docs.risingwave.com/docs/current/sql-pattern-dynamic-filters/) to create a filter condition based on the latest pickup time.
+
+NOTE: For this question `17 hours` was picked to ensure we have enough data to work with.
+
+Options:
+
+1. Clinton East, Upper East Side North, Penn Station
+2. **LaGuardia Airport, Lincoln Square East, JFK Airport**
+3. Midtown Center, Upper East Side South, Upper East Side North
+4. LaGuardia Airport, Midtown Center, Upper East Side North
+
+```sql
+with highest_avg_trip_time as (
+    select
+        max(tpep_pickup_datetime) latest_pickup_time
+    from
+        trip_data
+),
+tmp as (
+    select
+        pulocationid,
+        count(*) num_of_pickups
+    from
+        trip_data
+    join
+        highest_avg_trip_time h
+    on
+        tpep_pickup_datetime >= h.latest_pickup_time - interval '17 hours'
+        and
+        tpep_pickup_datetime <= h.latest_pickup_time
+    group by
+        pulocationid
+    order by
+        2 desc
+    limit 3
+)
+
+select
+    taxi_zone.zone,
+    tmp.num_of_pickups
+from
+    tmp
+join
+    taxi_zone
+on
+    tmp.pulocationid = taxi_zone.location_id
+```
 
 
 
